@@ -1,6 +1,7 @@
 ﻿using Audio.ConfiguredAudioPlayer;
 using Audio.NPC;
 using Comfort.Common;
+using EFT.CameraControl;
 using EFT.NPC;
 using HarmonyLib;
 using System;
@@ -9,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using static BetterAudio;
 
 namespace tarkin.tradermod.eft.Bep
 {
@@ -57,7 +59,19 @@ namespace tarkin.tradermod.eft.Bep
         {
             if (audioClipData.TryGetValue(name, out var clipConfig))
             {
-                audioSource.PlayOneShot(clipConfig.clip, 1f);
+                Vector3 pos = audioSource.transform.position;
+                float dist = Vector3.Distance(CameraManager.Instance.Camera.transform.position, pos);
+                // change to use BetterAudio for sound playback, for compatibility with mods that change audio playback behavior (Like "SoundEngineBackport" and Etc)
+                Singleton<BetterAudio>.Instance.PlayAtPoint(
+                    position: pos,
+                    clip: clipConfig.clip,
+                    distance: dist,
+                    sourceGroup: AudioSourceGroupType.Speech,
+                    rolloff: 30,
+                    volume: 1.0f,
+                    occlusionTest: EOcclusionTest.OneShotFullOcclusion,
+                    forceMixerGroup: null
+                );
             }
         }
     }
