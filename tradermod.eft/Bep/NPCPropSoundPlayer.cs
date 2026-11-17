@@ -41,7 +41,7 @@ namespace tarkin.tradermod.eft.Bep
             }
 
             // stops working on reenable without force reinit
-            (AccessTools.Field(typeof(NPCAnimationsEventReceiver), "list_0").GetValue(eventReceiver) as System.Collections.IList)?.Clear();
+            (AccessTools.Field(typeof(NPCAnimationsEventReceiver), "_eventsConsumers").GetValue(eventReceiver) as System.Collections.IList)?.Clear();
             eventReceiver.Initialize(GetComponent<Animator>());
 
             eventReceiver.OnNeedToPlaySomeSound += EventReceiver_OnNeedToPlaySomeSound;

@@ -9,6 +9,7 @@ namespace tarkin.tradermod.eft.Bep
     public class TraderUIManager : IDisposable
     {
         private readonly BepInEx.Logging.ManualLogSource _logger = BepInEx.Logging.Logger.CreateLogSource(nameof(TraderUIManager));
+        private static bool IsAlive(UnityEngine.Object obj) => obj != null && obj;
 
         GameObject traderFaceButton;
         HoverTooltipArea traderFaceTooltip;
@@ -54,7 +55,14 @@ namespace tarkin.tradermod.eft.Bep
                 return;
             }
 
-            var subtitle = dialogData.GetLocalizedSubtitle(traderScene.ChatterPrompt);
+            // check for destroy
+            if (!IsAlive(traderFaceButton))
+            {
+                _logger.LogWarning("TraderFaceButton was null/destroyed. Skipping SetTraderCanInteractState.");
+                return;
+            }
+
+            var subtitle = dialogData?.GetLocalizedSubtitle(traderScene.ChatterPrompt);
             bool hasValidText = !string.IsNullOrEmpty(subtitle);
 
             bool shouldShow = hasValidText && canInteract;
@@ -63,14 +71,37 @@ namespace tarkin.tradermod.eft.Bep
 
             if (shouldShow)
             {
-                traderFaceTooltip.SetMessageText(subtitle);
+                // check "Tooltip" for destroy too
+                if (IsAlive(traderFaceTooltip))
+                {
+                    traderFaceTooltip.SetMessageText(subtitle);
+                }
+                else
+                {
+                    _logger.LogWarning("TraderFaceTooltip was null/destroyed while trying to set message text.");
+                }
             }
         }
 
         public void Dispose()
         {
-            if (traderFaceButton != null)
-                GameObject.Destroy(traderFaceButton);
+            _logger.LogInfo("Disposing self");
+
+            if (traderFaceButton == null)
+            {
+                _logger.LogInfo("Already Dispose Complete");
+                return;
+            }
+
+            if (IsAlive(traderFaceButton))
+            {
+                traderFaceButton.SetActive(false);
+                // 不 Destroy
+                traderFaceButton = null;
+                traderFaceTooltip = null;
+                _logger.LogInfo("Dispose (hide only) Complete");
+            }
+
         }
     }
 }

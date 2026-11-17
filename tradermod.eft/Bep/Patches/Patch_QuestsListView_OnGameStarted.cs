@@ -1,4 +1,6 @@
 ﻿using EFT;
+using EFT.Quests;
+using EFT.Trading;
 using EFT.UI;
 using HarmonyLib;
 using SPT.Reflection.Patching;
@@ -9,7 +11,7 @@ namespace tarkin.tradermod.eft.Bep.Patches
 {
     internal class Patch_QuestsListView_Show : ModulePatch
     {
-        public static event Action<AbstractQuestControllerClass, TraderClass> OnPostfix;
+        public static event Action<QuestController, Trader> OnPostfix;
 
         protected override MethodBase GetTargetMethod()
         {
@@ -17,7 +19,7 @@ namespace tarkin.tradermod.eft.Bep.Patches
         }
 
         [PatchPostfix]
-        private static void PatchPostfix(QuestsListView __instance, AbstractQuestControllerClass questController, TraderClass trader)
+        private static void PatchPostfix(QuestsListView __instance, QuestController questController, Trader trader)
         {
             try
             {

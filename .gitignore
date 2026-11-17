@@ -7,3 +7,13 @@
 BundleResources/Equi/*.png
 
 BundleResources/ModifiedTextures/*.png
+/tradermod.eft/bin/Debug/net472
+/tradermod.eft/obj/Debug/net472
+/tradermod.eft/obj
+/tradermod.shared/bin/Debug/net472
+/tradermod.shared/obj
+/tradermod.eft/bin/Release/net472
+/tradermod.eft/Properties/PublishProfiles
+/tradermod.shared/bin/Release/net472
+/.editorconfig
+/tradermod.eft/tradermod.eft.csproj.user

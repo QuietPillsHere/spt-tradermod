@@ -13,15 +13,15 @@ namespace tarkin.tradermod.eft.Bep.Patches
 
         public static event Action<EMenuType, bool> OnPostfix;
 
-        public static MainMenuControllerClass Instance { get; private set; }    
+        public static MainMenuShowOperation Instance { get; private set; }    
 
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(MainMenuControllerClass), nameof(MainMenuControllerClass.ShowScreen));
+            return AccessTools.Method(typeof(MainMenuShowOperation), nameof(MainMenuShowOperation.ShowScreen));
         }
 
         [PatchPostfix]
-        private static void PatchPostfix(MainMenuControllerClass __instance, EMenuType screen, bool turnOn)
+        private static void PatchPostfix(MainMenuShowOperation __instance, EMenuType screen, bool turnOn)
         {
             try
             {

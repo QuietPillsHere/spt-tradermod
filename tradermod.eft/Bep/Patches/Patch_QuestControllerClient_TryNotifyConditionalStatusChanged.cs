@@ -1,10 +1,9 @@
 ﻿using EFT;
+using EFT.Quests;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 using System;
 using System.Reflection;
-
-using QuestControllerClient = GClass4005;
 
 namespace tarkin.tradermod.eft.Bep.Patches
 {
@@ -12,7 +11,7 @@ namespace tarkin.tradermod.eft.Bep.Patches
     {
         private static readonly BepInEx.Logging.ManualLogSource Logger = BepInEx.Logging.Logger.CreateLogSource(nameof(Patch_QuestControllerClient_TryNotifyConditionalStatusChanged));
 
-        public static event Action<QuestClass> OnPostfix;
+        public static event Action<Quest> OnPostfix;
 
         protected override MethodBase GetTargetMethod()
         {
@@ -20,7 +19,7 @@ namespace tarkin.tradermod.eft.Bep.Patches
         }
 
         [PatchPostfix]
-        private static void PatchPostfix(QuestClass quest)
+        private static void PatchPostfix(Quest quest)
         {
             try
             {

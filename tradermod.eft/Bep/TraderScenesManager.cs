@@ -1,5 +1,6 @@
 ﻿using BepInEx.Logging;
 using Comfort.Common;
+using EFT.CameraControl;
 using EFT.UI;
 using EFT.UI.Screens;
 using System;
@@ -66,8 +67,10 @@ namespace tarkin.tradermod.eft
 
         private void RefreshUIState(TraderScene scene)
         {
-            if (_tradingUIManager == null) 
+            if (_tradingUIManager == null)
+            {
                 return;
+            }
             bool hasLines = _interactionService.HasUnplayedChatter(scene);
             _tradingUIManager.SetTraderCanInteractState(scene, hasLines);
         }
@@ -133,8 +136,8 @@ namespace tarkin.tradermod.eft
 
                 // hideout bastard
                 await Task.Yield();
-                if (CameraClass.Instance.Camera != null)
-                    CameraClass.Instance.IsActive = false;
+                if (CameraManager.Instance.Camera != null)
+                    CameraManager.Instance.IsActive = false;
                 return;
             }
 
@@ -213,7 +216,7 @@ namespace tarkin.tradermod.eft
         {
             StopIdleLoop();
 
-            if (CurrentScreenSingletonClass.Instance.RootScreenType == EEftScreenType.Hideout)
+            if (EftScreenManager.Instance.RootScreenType == EEftScreenType.Hideout)
             {
                 Patch_MainMenuControllerClass_ShowScreen.Instance.ShowScreen(EMenuType.MainMenu, true);
                 Patch_MainMenuControllerClass_ShowScreen.Instance.ShowScreen(EMenuType.Trade, true);
@@ -308,11 +311,15 @@ namespace tarkin.tradermod.eft
 
         public void Dispose()
         {
-            _logger.LogInfo("Disposing self");
+            _logger.LogInfo("Disposing Self");
             StopIdleLoop();
-            _cameraController.Dispose();
-            _interactionService.Dispose();
+            _logger.LogInfo("Disposing CameraController Executing ...");
+            _cameraController?.Dispose();
+            _logger.LogInfo("Disposing InteractionService Executing ...");
+            _interactionService?.Dispose();
+            _logger.LogInfo("Disposing TradingUIManager Executing ...");
             _tradingUIManager?.Dispose();
+            _logger.LogInfo("Disposing SwitchLock Executing ...");
             _switchLock?.Dispose();
         }
     }

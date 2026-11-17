@@ -1,10 +1,11 @@
-﻿using EFT.UI;
+﻿using EFT.Quests;
+using EFT.UI;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
-using EFT.Quests;
+using static EFT.UI.WeaponModding.WeaponModdingScreen;
 
 namespace tarkin.tradermod.eft.Bep.Patches
 {
@@ -12,21 +13,21 @@ namespace tarkin.tradermod.eft.Bep.Patches
     {
         private static readonly BepInEx.Logging.ManualLogSource Logger = BepInEx.Logging.Logger.CreateLogSource(nameof(Patch_QuestObjectiveView_QuestHandover));
 
-        public static event Action<QuestClass, bool> OnPostfix;
+        public static event Action<Quest, bool> OnPostfix;
 
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(QuestObjectiveView), nameof(QuestObjectiveView.method_2));
+            return AccessTools.Method(typeof(QuestObjectiveView), nameof(QuestObjectiveView.QuestHandover), new Type[] { typeof(Quest) });
         }
 
         [PatchPostfix]
-        private static void PatchPostfix(QuestObjectiveView __instance, ref Task __result, QuestClass selectedQuest, Condition ___Condition)
+        private static void PatchPostfix(QuestObjectiveView __instance, ref Task __result, Quest selectedQuest, Condition ___Condition)
         {
             __result = Wrapper(__instance, __result, selectedQuest, ___Condition);
         }
 
         // check whether player handed over the items or backed out of the window
-        private static async Task Wrapper(QuestObjectiveView view, Task originalTask, QuestClass selectedQuest, Condition condition)
+        private static async Task Wrapper(QuestObjectiveView view, Task originalTask, Quest selectedQuest, Condition condition)
         {
             double initialProgress = 0;
             bool wasDone = false;

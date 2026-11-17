@@ -16,7 +16,7 @@ namespace tarkin.tradermod.eft.Bep.Patches
 
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(WeaponModdingScreen), nameof(WeaponModdingScreen.Show), new Type[] { typeof(GClass3922) });
+            return AccessTools.Method(typeof(WeaponModdingScreen), nameof(WeaponModdingScreen.Show), new Type[] { typeof(WeaponModdingScreenController) });
         }
 
         [PatchPostfix]

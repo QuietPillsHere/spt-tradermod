@@ -3,9 +3,12 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using Comfort.Common;
 using EFT;
+using EFT.CameraControl;
 using EFT.Dialogs;
+using EFT.Settings;
 using EFT.UI;
 using EFT.UI.Screens;
+using HarmonyLib;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -35,9 +38,14 @@ namespace tarkin.tradermod.eft
 
         private static TraderUIManager _traderUIManager;
 
-        private void Start()
+        // change method "Start()" to "Awake()" for Harmony patch to work
+        //private void Start()
+        private void Awake()
         {
             Log = base.Logger;
+
+            Main.Init();
+
             var prewarm = typeof(TraderScene);
 
             // main menu controller, respawned every raid end
@@ -173,7 +181,7 @@ namespace tarkin.tradermod.eft
                     return;
                 }
 
-                GetOrCreateScenesManager().Interact(quest.QuestDataClass.Template.TraderId, ETraderDialogType.Handover);
+                GetOrCreateScenesManager().Interact(quest.questDataClass.Template.TraderId, ETraderDialogType.Handover);
             };
 
             Patch_QuestControllerClient_TryNotifyConditionalStatusChanged.OnPostfix += (quest) =>
@@ -182,9 +190,9 @@ namespace tarkin.tradermod.eft
                     return;
 
                 if (quest.QuestStatus == EFT.Quests.EQuestStatus.AvailableForFinish)
-                    _scenesManager.Interact(quest.QuestDataClass.Template.TraderId, ETraderDialogType.QuestComplete);
+                    _scenesManager.Interact(quest.questDataClass.Template.TraderId, ETraderDialogType.QuestComplete);
                 else if (quest.QuestStatus == EFT.Quests.EQuestStatus.Started)
-                    _scenesManager.Interact(quest.QuestDataClass.Template.TraderId, ETraderDialogType.QuestStart);
+                    _scenesManager.Interact(quest.questDataClass.Template.TraderId, ETraderDialogType.QuestStart);
             };
 
             Patch_MainMenuControllerClass_ShowScreen.OnPostfix += (screenType, on) =>
@@ -196,9 +204,9 @@ namespace tarkin.tradermod.eft
                 {
                     if (screenType == EMenuType.Trade)
                     {
-                        if (CurrentScreenSingletonClass.Instance.RootScreenType == EEftScreenType.Hideout)
+                        if (EftScreenManager.Instance.RootScreenType == EEftScreenType.Hideout)
                         {
-                            if ((bool)Singleton<SharedGameSettingsClass>.Instance.Game.Settings.TradingIntermediateScreen)
+                            if ((bool)Singleton<SettingsManager>.Instance.Game.Settings.TradingIntermediateScreen)
                             {
                                 Patch_MainMenuControllerClass_ShowScreen.Instance.ShowScreen(EMenuType.MainMenu, true); // hides hideout
                                 Patch_MainMenuControllerClass_ShowScreen.Instance.ShowScreen(EMenuType.Trade, true);
@@ -214,7 +222,10 @@ namespace tarkin.tradermod.eft
                         {
                             SceneManager.SetActiveScene(hideoutScene);
 
-                            CameraClass.Instance.IsActive = true;
+                            if (CameraManager.Instance?.Camera?.gameObject != null)
+                            {
+                                CameraManager.Instance.IsActive = true;
+                            }
                         }
                     }
                 }

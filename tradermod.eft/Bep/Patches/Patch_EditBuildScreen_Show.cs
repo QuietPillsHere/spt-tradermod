@@ -15,7 +15,7 @@ namespace tarkin.tradermod.eft.Bep.Patches
 
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(EditBuildScreen), nameof(EditBuildScreen.Show), new Type[] { typeof(EditBuildScreen.GClass3881) });
+            return AccessTools.Method(typeof(EditBuildScreen), nameof(EditBuildScreen.Show), new Type[] { typeof(EditBuildScreen.EditBuildScreenController) });
         }
 
         [PatchPostfix]

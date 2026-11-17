@@ -1,11 +1,7 @@
 ﻿using Comfort.Common;
 using EFT.Dialogs;
+using EFT.Settings;
 using System.Collections.Generic;
-
-#if SPT_4_0
-using DialogLineTemplate = GClass3666;
-using TraderDialogTemplate = GClass3665;
-#endif
 
 namespace tarkin.tradermod.eft
 {
@@ -79,8 +75,8 @@ namespace tarkin.tradermod.eft
         public string GetLocalizedSubtitle(string id)
         {
             string currentLocale = "en";
-            if (Singleton<SharedGameSettingsClass>.Instantiated)
-                currentLocale = Singleton<SharedGameSettingsClass>.Instance.Game.Settings.Language.Value;
+            if (Singleton<SettingsManager>.Instantiated)
+                currentLocale = Singleton<SettingsManager>.Instance.Game.Settings.Language.Value;
 
             if (TryGetText(currentLocale, id, out string result))
                 return result;

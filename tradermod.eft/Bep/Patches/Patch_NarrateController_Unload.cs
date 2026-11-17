@@ -1,11 +1,14 @@
-﻿using HarmonyLib;
+﻿using Cysharp.Threading.Tasks;
+using HarmonyLib;
 using SPT.Reflection.Patching;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using tarkin.tradermod.bep;
-
-using NarrateController = EFT.TarkovApplication.GClass2302;
+using UnityEngine;
+using static EFT.TarkovApplication;
 
 namespace tarkin.tradermod.eft.Bep.Patches
 {
@@ -21,24 +24,51 @@ namespace tarkin.tradermod.eft.Bep.Patches
         }
 
         [PatchPostfix]
-        private static void Postfix(ref Task __result)
+        private static void Postfix(ref Task __result, object __instance)
         {
-            __result = UnloadWrapper(__result);
-        }
-
-        private static async Task UnloadWrapper(Task originalTask)
-        {
-            await originalTask;
-
+            // 调试用，确认当前线程
+            Logger.LogDebug($"Postfix instance:{__instance.GetHashCode()} ,thread: {Thread.CurrentThread.ManagedThreadId},");
             try
             {
-                await TraderBundleManager.UnloadAllBundles();
-                OnPostfix?.Invoke();
+                var originalTask = __result;
+                UnloadWrapper(originalTask).Forget();
             }
             catch (Exception ex)
             {
                 Logger.LogError($"Failed to unload traders: {ex}");
             }
+        }
+
+        private static async UniTask UnloadWrapper(Task originalTask)
+        {
+            await originalTask;
+
+            await UniTask.Yield();
+            //await UniTask.DelayFrame(1);
+
+            //await UniTask.SwitchToMainThread();
+
+            await TraderBundleManager.UnloadAllBundles();
+
+            //await TraderBundleManager.UnloadAllBundles().AsUniTask();
+
+            OnPostfix?.Invoke();
+
+            //var tcs = new TaskCompletionSource<bool>();
+
+            //var currentContext = UniTask.ReturnToCurrentSynchronizationContext();
+
+            //await UniTask.SwitchToThreadPool();
+
+            //var cts = new CancellationTokenSource();
+
+            //var unloadbundleTask = TraderBundleManager.UnloadAllBundles();
+
+            //await UniTask.WaitUntil(() => unloadbundleTask.);
+
+            //await UniTask.SwitchToMainThread();
+
+            //return originalTask.ContinueWith(t => { }, TaskScheduler.Current);
         }
     }
 }

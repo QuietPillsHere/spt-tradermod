@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BepInEx.Logging;
 using Comfort.Common;
+using Diz.Utils;
 using EFT;
 using EFT.AnimationSequencePlayer;
 using Newtonsoft.Json;
@@ -13,8 +14,8 @@ using UnityEngine;
 using UnityEngine.Playables;
 
 #if SPT_4_0
-using CombinedAnimationData = GClass4067;
-using SequencePlayer = GClass4065;
+//using CombinedAnimationData = GClass4067;
+//using SequencePlayer = GClass4065;
 #endif
 
 namespace tarkin.tradermod.eft
@@ -44,7 +45,7 @@ namespace tarkin.tradermod.eft
         {
             _dialogData = dialogData;
 
-            string currentProfileId = Singleton<ClientApplication<ISession>>.Instance?.GetClientBackEndSession()?.Profile?.Id;
+            string currentProfileId = Singleton<ClientApplication<IEftSession>>.Instance?.GetClientBackEndSession()?.Profile?.Id;
             if (string.IsNullOrEmpty(currentProfileId))
                 currentProfileId = "unknownprofile";
 
@@ -144,7 +145,7 @@ namespace tarkin.tradermod.eft
                     if (scene.TraderGameObject.TryGetComponent<AnimationDictionary>(out var nativeAnimDict))
                     {
                         // disable props
-                        SequencePlayer.smethod_4(nativeAnimDict);
+                        SequencePlayer.DisableAllProps(nativeAnimDict);
                     }
 
                     scene.Director.playableAsset = selectedTimeline;

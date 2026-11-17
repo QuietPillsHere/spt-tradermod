@@ -4,8 +4,8 @@ using HarmonyLib;
 using SPT.Reflection.Patching;
 using System;
 using System.Reflection;
+using static EFT.UI.MenuScreen;
 
-using MainMenuBaseScreenController = EFT.UI.MenuScreen.GClass3877;
 
 namespace tarkin.tradermod.eft.Bep.Patches
 {

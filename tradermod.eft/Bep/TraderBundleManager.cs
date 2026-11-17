@@ -1,13 +1,16 @@
 ﻿using BepInEx.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using tarkin.tradermod.shared;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static EFT.Profile;
 
 namespace tarkin.tradermod.eft.Bep
 {
@@ -18,9 +21,9 @@ namespace tarkin.tradermod.eft.Bep
         public static readonly string BundleDirectory = Path.Combine(BepInEx.Paths.PluginPath, "tarkin", "bundles", "vendors");
         private static readonly string[] DependencyBundles = new string[] { "vendors_shared" };
 
-        private static readonly Dictionary<string, string> _resolvedBundleCache = new Dictionary<string, string>();
-        private static readonly Dictionary<string, AssetBundle> _loadedAssetBundles = new Dictionary<string, AssetBundle>();
-
+        // change "Dictionary" type to "ConcurrentDictionary" for thead safe reason
+        private static readonly ConcurrentDictionary<string, string> _resolvedBundleCache = new ConcurrentDictionary<string, string>();
+        private static readonly ConcurrentDictionary<string, AssetBundle> _loadedAssetBundles = new ConcurrentDictionary<string, AssetBundle>();
         private static readonly SemaphoreSlim _bundleLock = new SemaphoreSlim(1, 1);
 
         private static string GetBundleNameFromId(string traderId)
@@ -52,6 +55,7 @@ namespace tarkin.tradermod.eft.Bep
             }
 
             await _bundleLock.WaitAsync();
+
             try
             {
                 await EnsureDependencyBundlesAreLoaded();
@@ -198,15 +202,29 @@ namespace tarkin.tradermod.eft.Bep
 
         public async static Task UnloadAllBundles()
         {
-            foreach (var kvp in _loadedAssetBundles)
+            Plugin.Log.LogInfo($"UnloadAllBundles Executing ...");
+            if (_loadedAssetBundles.Count > 0)
             {
-                if (kvp.Value != null) 
-                    kvp.Value.Unload(true);
-
-                await Task.Yield();
+                //ETraderType.Fence
+                Plugin.Log.LogInfo($"UnloadAllBundles Looping");
+                // unload logic...
+                foreach (var kvp in _loadedAssetBundles)
+                {
+                    if (kvp.Value != null && kvp.Value)
+                    {
+                        Plugin.Log.LogInfo($"UnloadAllBundles {kvp.Key} => execute unload");
+                        await kvp.Value.UnloadAsync(true);
+                    }
+                    else
+                    {
+                        Plugin.Log.LogInfo($"UnloadAllBundles {kvp.Key} => skip");
+                    }
+                    //await Task.Yield();
+                }
+                Plugin.Log.LogInfo($"UnloadAllBundles Complete");
+                _loadedAssetBundles.Clear();
+                _resolvedBundleCache.Clear();
             }
-            _loadedAssetBundles.Clear();
-            _resolvedBundleCache.Clear();
         }
     }
 }

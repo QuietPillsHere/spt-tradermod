@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EFT.CameraControl;
+using System;
 using System.Collections;
 using System.Threading.Tasks;
 using tarkin.tradermod.shared;
@@ -29,8 +30,8 @@ namespace tarkin.tradermod.eft
                 GameObject.DontDestroyOnLoad(_cam.gameObject);
             }
 
-            if (CameraClass.Instance.Camera != null)
-                CameraClass.Instance.IsActive = false;
+            if (CameraManager.Instance.Camera != null)
+                CameraManager.Instance.IsActive = false;
 
             _cam.gameObject.SetActive(true);
             _cam.transform.SetPositionAndRotation(camPoint.position, camPoint.rotation);

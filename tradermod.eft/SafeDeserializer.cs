@@ -9,9 +9,9 @@ using UnityEngine;
 
 #if SPT_4_0
 using BepInEx.Logging;
-using DialogCondition = GClass3651;
-using Elements = GClass3665;
-using EFTJsonConverters = JsonSerializerSettingsClass;
+//using DialogCondition = GClass3651;
+//using Elements = GClass3665;
+//using EFTJsonConverters = JsonSerializerSettingsClass;
 #endif
 
 
