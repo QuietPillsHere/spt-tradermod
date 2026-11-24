@@ -10,6 +10,6 @@ namespace tarkin.tradermod.eft
     {
         public const string PLUGIN_GUID = "com.tarkin.tradermod";
         public const string PLUGIN_NAME = "TraderMod";
-        public const string PLUGIN_VERSION = "1.0.4";
+        public const string PLUGIN_VERSION = "1.0.5";
     }
 }
