@@ -26,7 +26,6 @@ namespace tarkin.tradermod.eft.Bep.Patches
         [PatchPostfix]
         private static void Postfix(ref Task __result, object __instance)
         {
-            // 调试用，确认当前线程
             Logger.LogDebug($"Postfix instance:{__instance.GetHashCode()} ,thread: {Thread.CurrentThread.ManagedThreadId},");
             try
             {
@@ -44,31 +43,10 @@ namespace tarkin.tradermod.eft.Bep.Patches
             await originalTask;
 
             await UniTask.Yield();
-            //await UniTask.DelayFrame(1);
-
-            //await UniTask.SwitchToMainThread();
 
             await TraderBundleManager.UnloadAllBundles();
 
-            //await TraderBundleManager.UnloadAllBundles().AsUniTask();
-
             OnPostfix?.Invoke();
-
-            //var tcs = new TaskCompletionSource<bool>();
-
-            //var currentContext = UniTask.ReturnToCurrentSynchronizationContext();
-
-            //await UniTask.SwitchToThreadPool();
-
-            //var cts = new CancellationTokenSource();
-
-            //var unloadbundleTask = TraderBundleManager.UnloadAllBundles();
-
-            //await UniTask.WaitUntil(() => unloadbundleTask.);
-
-            //await UniTask.SwitchToMainThread();
-
-            //return originalTask.ContinueWith(t => { }, TaskScheduler.Current);
         }
     }
 }
