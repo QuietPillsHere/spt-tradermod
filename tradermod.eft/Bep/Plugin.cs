@@ -234,6 +234,11 @@ namespace tarkin.tradermod.eft
             Patch_WeaponModdingScreen_Show.OnPostfix += () => _scenesManager?.Close();
             Patch_EditBuildScreen_Show.OnPostfix += () => _scenesManager?.Close();
 
+            // Patch for SEB
+            new Patch_SEB_LiveMixer().Enable();
+            new Patch_SEB_MixerRouting().Enable();
+            new Patch_SEB_MixerRouting_ViaHierarchy().Enable();
+
 #if DEBUG
             var tester = new GameObject("trader debug").AddComponent<InteractionTester>();
             DontDestroyOnLoad(tester.gameObject);
